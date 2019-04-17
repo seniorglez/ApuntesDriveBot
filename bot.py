@@ -1,4 +1,5 @@
 import os, random
+from googleAuth import verify
 from telegram.ext import ( Updater, CommandHandler, MessageHandler, Filters )
 
 BOT = 867671952
@@ -38,11 +39,13 @@ def hello(bot, update):
 
 def es_inadecuado(update):
     return update.message.chat.id != GRUPO
+if __name__=="__main__":
+    verify()
 
-updater = Updater(os.environ["telegram_token"])
+    updater = Updater(os.environ["telegram_token"])
 
-updater.dispatcher.add_handler(CommandHandler('hello', hello))
-updater.dispatcher.add_handler(MessageHandler(Filters.status_update.new_chat_members, welcome))
+    updater.dispatcher.add_handler(CommandHandler('hello', hello))
+    updater.dispatcher.add_handler(MessageHandler(Filters.status_update.new_chat_members, welcome))
 
-updater.start_polling()
-updater.idle()
+    updater.start_polling()
+    updater.idle()
