@@ -5,22 +5,31 @@ BOT = 867671952
 GRUPO = -368576776
 
 def welcome(bot, update):
-    print(update.message.chat.id)
+    users=[]
     for nuevoUsuario in update.message.new_chat_members:
-        print(nuevoUsuario)
-        soyYo = nuevoUsuario['id'] == BOT
-
-    if soyYo and es_inadecuado(update):
-        gifs = [ "9VcGZPbijSieHIGSj3",
-                 "Bq7yz8gBShy5a", "yRXnlNNC9U7FC",
-                 "cLJdDcAWTkW6k", "12ttoBXEqixfmo",
-                 "c6DIpCp1922KQ", "jSxK33dwEMbkY",
-                 "vkwAeqMEUSaoU", "106i22nkWV58SA" ]
+        if nuevoUsuario['id'] != BOT: 
+            users.append(nuevoUsuario['first_name'])
+            print(nuevoUsuario)
+        elif nuevoUsuario['id'] == BOT: 
+            gifs_adios = [ "9VcGZPbijSieHIGSj3",
+                     "Bq7yz8gBShy5a", "yRXnlNNC9U7FC",
+                     "cLJdDcAWTkW6k", "12ttoBXEqixfmo",
+                     "c6DIpCp1922KQ", "jSxK33dwEMbkY",
+                     "vkwAeqMEUSaoU", "106i22nkWV58SA" ]
+            bot.sendDocument(chat_id=update.message.chat_id,
+                                document =
+                                "https://media1.giphy.com/media/"+random.choice(gifs_adios)+"/giphy.gif",
+                                caption = "Lo siento, no puedo seguir aquí, mi dueño me mataría.\n\n"
+                            + "Si queréis verme en acción, os jodeis.");
+            bot.leave_chat(update.message.chat.id)
+            return False
+    for user in users:
+        gifs_hola = ["zI19V0pvL7VbzQymhm"]
         bot.sendDocument(chat_id=update.message.chat_id,
-                            document = "https://media1.giphy.com/media/"+random.choice(gifs)+"/giphy.gif",
-                            caption = "Lo siento, no puedo seguir aquí, mi dueño me mataría.\n\n"
-                        + "Si queréis verme en acción, os jodeis.");
-        bot.leave_chat(update.message.chat.id)
+                            document =
+                            "https://media1.giphy.com/media/"+random.choice(gifs_hola)+"/giphy.gif",
+                            caption = "Hola {}".format(user),
+                            reply_to_message_id=update.message.message_id);
 
 def hello(bot, update):
     update.message.reply_text(
