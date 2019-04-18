@@ -1,14 +1,11 @@
-import os, random, 
+import os, random
+from keyboards import Keyboards
 from telegram.ext import ( Updater, CommandHandler, MessageHandler, CallbackQueryHandler, Filters )
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 BOT = 867671952
 GRUPO = -368576776
-GRADOS = InlineKeyboardMarkup([
-            [InlineKeyboardButton('DAM',  callback_data='DAM')],
-            [InlineKeyboardButton('DAW',  callback_data='DAW')],
-            [InlineKeyboardButton('ASIR', callback_data='ASIR')]
-])
+keyboard = Keyboards()
 
 def welcome(bot, update):
     users=[]
@@ -45,15 +42,25 @@ def hello(bot, update):
         'Hello {}'.format(update.message.from_user.first_name))
 
 def upload(update, context):
-    update.message.reply_text('Please choose:', reply_markup=CATEGORIAS)
+    update.message.reply_text('Please choose:', reply_markup=keyboard.get_main_menu_keyboard())
 
-def button(update, context):
+def main_menu(update, context):
     query = update.callback_query
     
     if query['from_user']['id'] == query.message.reply_to_message['from_user']['id']:
-        query.edit_message_text(text="Selected option: {}".format(query.data), reply_markup=CATEGORIAS)
+        query.edit_message_text(text="Selected option: {}".format(query.data), reply_markup=keyboard.get_main_menu_keyboard())
     else:
        print("Mal")        
+
+def second_menu(update, context):
+    query = update.callback_query
+
+    if query['from_user']['id'] == query.message.reply_to_message['from_user']['id']:
+        query.edit_message_text(text="Selected option: {}".format(query.data), reply_markup=keyboard.get_secondary_main_menu_keyboard())
+    else:
+       print("Mal")    
+
+
 
 def es_inadecuado(update):
     return update.message.chat.id != GRUPO
@@ -63,7 +70,8 @@ updater = Updater(os.environ["telegram_token"], use_context=True)
 updater.dispatcher.add_handler(CommandHandler('hello', hello))
 updater.dispatcher.add_handler(CommandHandler('upload', upload))
 updater.dispatcher.add_handler(MessageHandler(Filters.status_update.new_chat_members, welcome))
-updater.dispatcher.add_handler(CallbackQueryHandler(button))
+updater.dispatcher.add_handler(CallbackQueryHandler(main_menu, pattern='<'))
+updater.dispatcher.add_handler(CallbackQueryHandler(second_menu, pattern='>'))
 
 updater.start_polling()
 updater.idle()
