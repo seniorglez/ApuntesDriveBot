@@ -1,11 +1,13 @@
 import os, random
 from keyboards import Keyboards
+from googleFileManager import GoogleFileManager
 from telegram.ext import ( Updater, CommandHandler, MessageHandler, CallbackQueryHandler, Filters )
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 BOT = 867671952
 GRUPO = -368576776
 keyboard = Keyboards()
+file_manager = GoogleFileManager()
 
 def welcome(bot, update):
     users=[]
@@ -37,9 +39,20 @@ def welcome(bot, update):
                             caption = "Hola {}".format(user),
                             reply_to_message_id=update.message.message_id)
 
-def hello(bot, update):
-    update.message.reply_text(
-        'Hello {}'.format(update.message.from_user.first_name))
+# Testing
+def hello(update, context):
+    # print(file_manager.list_files())
+    # update.message.reply_text(
+    #    'Hello {}'.format(update.message.from_user.first_name))
+    # files = file_manager.list_files_in("ApuntesDriveBot")
+    files = file_manager.list_files()
+    mes = "Nada por aquí" if not files else "Archivos:"
+
+    for f in files:
+        mes += u'\n- [{file_name}]({file_link})'.format(file_name=f['name'],
+                                                        file_link="https://drive.google.com/file/d/"+f['id'])
+    print(mes)
+    update.message.reply_text(mes, parse_mode="MARKDOWN", disable_web_page_preview="true")
 
 def upload(update, context):
     update.message.reply_text('Please choose:', reply_markup=keyboard.get_main_menu_keyboard())
