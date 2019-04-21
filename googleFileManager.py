@@ -7,24 +7,34 @@ class GoogleFileManager():
     def __init__(self):
         self.service = build('drive', 'v3', credentials=get_creds())
     
-    def list_files(self):
+    def list_files_in(self, path=""):
         # 17gQDopZVzc--Ivto9pA_U0ybF3DX_oJy => ApuntesDriveBot
-        results = self.service.files().list(q='"17gQDopZVzc--Ivto9pA_U0ybF3DX_oJy" in parents and trashed = false').execute()
-        items = results.get('files', [])
-        files = []
+        folders = path.split("/")
+        folders = [] if not folders else folders
+        current_folder_id = '"17gQDopZVzc--Ivto9pA_U0ybF3DX_oJy"'
 
-        if not items:
-            #print('No files found.')
-            # TODO: dry this
-            return file_names
-        else:
+        for folder in folders:
+            current_folder_id = self.get_file_id(current_folder_id, folder)
+
+        files = []
+        results = self.service.files().list(q=current_folder_id+' in parents and trashed = false').execute()
+        items = results.get('files', [])
+
+        if items:
             #print('Files:')
             for item in items:
                 # print(u'{0} ({1})'.format(item['name'], item['id']))
                 print(item)
                 files.append({'name':item['name'], 'id':item['id']})
             return files
+        return files
 
+    def get_file_id(self, parent_id, folder_name):
+        results = self.service.files().list(q=parent_id+' in parents and trashed = false').execute()
+        items = results.get('files', [])
+        for item in items:
+            if item['name'] == folder_name:
+                return '"{}"'.format(item['id'])
 
     def upload_file(self, file_name, file_paht, mime_type):
 
