@@ -7,25 +7,28 @@ class GoogleFileManager():
     def __init__(self):
         self.service = build('drive', 'v3', credentials=get_creds())
     
-    def list_files_in(self, path=""):
+    def list_files_in(self, id):
         # 17gQDopZVzc--Ivto9pA_U0ybF3DX_oJy => ApuntesDriveBot
-        folders = path.split("/")
-        folders = [] if not folders else folders
+        #folders = path.split("/")
+        #folders = [] if not folders else folders
         current_folder_id = '"17gQDopZVzc--Ivto9pA_U0ybF3DX_oJy"'
-
-        for folder in folders:
-            current_folder_id = self.get_file_id(current_folder_id, folder)
-
+        
+        #for folder in folders:
+        #    current_folder_id = self.get_file_id(current_folder_id, folder)
+        #print("hola")
         files = []
-        results = self.service.files().list(q=current_folder_id+' in parents and trashed = false').execute()
+        results = self.service.files().list(q='"'+id+'" in parents and trashed = false').execute()
         items = results.get('files', [])
-
+        #print(items)
+        
         if items:
             #print('Files:')
             for item in items:
                 # print(u'{0} ({1})'.format(item['name'], item['id']))
                 print(item)
-                files.append({'name':item['name'], 'id':item['id']})
+                files.append({'name':item['name'],
+                              'id':item['id'],
+                              'type':'folder' if item['mimeType'] == "application/vnd.google-apps.folder" else 'file'})
             return files
         return files
 

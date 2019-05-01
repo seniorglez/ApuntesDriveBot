@@ -1,21 +1,34 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-class Keyboards():
-    def __init__(self):
-        self.CATEGORIAS = [[[InlineKeyboardButton('Programacion', callback_data='programacion') , InlineKeyboardButton('Seguridad', callback_data='seguridad')],
-                            [InlineKeyboardButton('Editores', callback_data='editores'), InlineKeyboardButton('Herramientas', callback_data='herramientas')],
-                            [InlineKeyboardButton('Sistemas', callback_data='sistemas'), InlineKeyboardButton('Otros', callback_data='otros')]],
-                           [[InlineKeyboardButton('Programacion', callback_data='programacion') , InlineKeyboardButton('Otros', callback_data='otros')],
-                           [InlineKeyboardButton('Programacion', callback_data='programacion'), InlineKeyboardButton('Otros', callback_data='otros')],
-                           [InlineKeyboardButton('Programacion', callback_data='programacion'), InlineKeyboardButton('Otros', callback_data='otros')]
-                          ]]
+def generate_keyboard(folders):
+    buttons = []
+    counter = 0
+    length = len(folders)
+    iterator = 0
+    columns = [[],[]]
 
-    def get_main_menu_keyboard(self):
-        CATEGORIAS_ACTUALES = self.CATEGORIAS[0].copy()
-        CATEGORIAS_ACTUALES.append([InlineKeyboardButton('>', callback_data='>')])
-        return InlineKeyboardMarkup(CATEGORIAS_ACTUALES)
+    for folder in folders:
 
-    def get_secondary_main_menu_keyboard(self):
-        CATEGORIAS_ACTUALES = self.CATEGORIAS[1].copy()
-        CATEGORIAS_ACTUALES.append([InlineKeyboardButton('<', callback_data='<')])
-        return InlineKeyboardMarkup(CATEGORIAS_ACTUALES)
+        counter += 1
+        iterator = 1 if counter % 2 == 0 else 0
+
+        if length % 2 == 0:
+            if not columns[1]:
+                columns[iterator].append(InlineKeyboardButton(folder['name'], callback_data=folder['id']))
+            else:
+                buttons.append(columns)
+                columns = [[],[]]
+            print(columns)
+        else:
+            if folder == folders[-1]:
+                buttons.append([InlineKeyboardButton(folder['name'], callback_data=folder['id'])])
+            else:
+                if not columns[1]:
+                    columns[iterator].append([InlineKeyboardButton(folder['name'], callback_data=folder['id'])])
+                else:
+                    buttons.append(columns)
+
+    
+    buttons.append([InlineKeyboardButton("^", callback_data="17gQDopZVzc--Ivto9pA_U0ybF3DX_oJy")])
+    print(buttons)
+    return InlineKeyboardMarkup(buttons)
